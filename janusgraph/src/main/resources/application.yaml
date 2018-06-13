@@ -1,0 +1,34 @@
+## Update server port
+#server.port: 8080
+
+graph:
+  # set default graph implementation of the meta/suggestion dao to janusgraph
+  #type: janusgraph
+
+  janusgraph:
+    config: elex-janusgraph/embedded.properties
+    ## alternatively, you can use cassandra/elasticsearch
+    #config: elex-janusgraph/cassandra-elasticsearch.properties
+
+  display:
+    nodes:
+      - type: person
+        color: "#3693D2"
+        icon: person
+      - type: company
+        color: "#FFB300"
+        icon: location_city
+      - type: article
+        color: "#009E73"
+        icon: description
+        explore: false
+        hasDetails: true
+    links:
+      - type: knows
+        color: "#FF3977"
+        isDirected: false
+      - type: works for
+      - type: wrote
+        isDirected: true
+      - type: mentions
+        isDirected: true

@@ -1,0 +1,36 @@
+# server settings
+server.port: 8080
+
+graph:
+  # default display settings for nodes/links sent to the client
+  display:
+    nodes:
+        #available attributes per node type
+        #  type
+        #  labelAttribute
+        #  weightAttribute
+        #  color
+        #  icon
+        #  explore
+        #  hasDetails
+      - type: person
+        color: "#3693D2"
+        icon: person
+      - type: movie
+        color: "#009E73"
+        icon: movie
+        hasDetails: true
+    links:
+        #available attributes per link type
+        #  type
+        #  labelAttribute
+        #  weightAttribute
+        #  color
+        #  explore
+        #  isDirected
+        #  hasDetails
+      - type: knows
+        color: "#007700"
+        isDirected: false
+      - type: cast
+        color: "#ffcc33"
