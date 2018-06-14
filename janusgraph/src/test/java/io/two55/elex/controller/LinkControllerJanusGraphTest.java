@@ -18,7 +18,10 @@ package io.two55.elex.controller;
 
 import io.two55.elex.ElexApp;
 import io.two55.elex.JanusGraphTest;
+import io.two55.elex.config.GraphSource;
 import io.two55.elex.config.JanusGraphConfig;
+import org.janusgraph.core.JanusGraph;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.BDDMockito.*;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
@@ -41,8 +45,13 @@ public class LinkControllerJanusGraphTest extends JanusGraphTest {
     private MockMvc mvc;
 
     @MockBean
-    private JanusGraphConfig graphSource;
+    private GraphSource<JanusGraph> graphSource;
 
+    @Before
+    public void bindBackend() {
+        given(graphSource.graph())
+                .willThrow(new IllegalStateException("This test should not make use of the graph source!"));
+    }
 
     @Test
     public void testGetDetails() throws Exception {

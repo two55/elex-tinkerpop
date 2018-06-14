@@ -34,9 +34,9 @@ Update the configuration `janusgraph/src/main/resources/application.yaml` accord
    ```
  * Create a sample database and run the web server
    ```
-   mvn --projects janusgraph spring-boot:run -Drun.arguments="--createExampleGraph"
+   mvn --projects janusgraph spring-boot:run -Dspring-boot.run.arguments="--createExampleGraph"
    ```
-   THe database can be dropped using
+   The database can be dropped using
    ```bash
    rm -rf data
    ```
