@@ -5,11 +5,11 @@
     <parent>
         <artifactId>elex</artifactId>
         <groupId>io.two55.elex</groupId>
-        <version>0.9.0</version>
+        <version>0.9.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>elex-core</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Entity Landscape Explorer - Core</name>
