@@ -1,0 +1,32 @@
+## Update server port
+#server.port: 8080
+
+graph:
+  # set default graph implementation of the meta/suggestion dao to janusgraph
+  #type: neo4j
+
+  neo4j:
+    config: elex-neo4j/remote.properties
+
+  display:
+    nodes:
+      - type: person
+        color: "#3693D2"
+        icon: person
+      - type: company
+        color: "#FFB300"
+        icon: location_city
+      - type: article
+        color: "#009E73"
+        icon: description
+        explore: false
+        hasDetails: true
+    links:
+      - type: knows
+        color: "#FF3977"
+        isDirected: false
+      - type: works for
+      - type: wrote
+        isDirected: true
+      - type: mentions
+        isDirected: true

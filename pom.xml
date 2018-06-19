@@ -8,6 +8,7 @@
     <modules>
         <module>core</module>
         <module>janusgraph</module>
+        <module>neo4j</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -41,6 +42,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring.boot.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
