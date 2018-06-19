@@ -122,7 +122,7 @@ public class SchemaMetaInformation {
         }
     }
 
-    static abstract class MetaInfoItem<T extends MetaInfoItem<T>> {
+    public static abstract class MetaInfoItem<T extends MetaInfoItem<T>> {
         String type;
         String labelAttribute = "name";
         String weightAttribute = "__weight";
