@@ -56,7 +56,7 @@ public class CreateExampleGraph implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (args.length < 1 || !Sets.newHashSet(args).contains("--createExampleGraph")) {
+        if (args.length < 1 || !Arrays.asList(args).contains("--createExampleGraph")) {
             return;
         }
         JanusGraph graph = graphSource.graph();
