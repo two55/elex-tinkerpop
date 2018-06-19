@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Service
 @Primary
 @ConditionalOnProperty(name = "graph.type", havingValue = "janusgraph", matchIfMissing=true)
-public class SuggestionDAOJanusGraph extends SuggestionDAODefaultImpl {
+public class SuggestionDAOJanusGraph extends SuggestionDAODefaultImpl<GraphSource<?>> {
 
     @Autowired
     public SuggestionDAOJanusGraph(GraphSource<JanusGraph> graphSource) {

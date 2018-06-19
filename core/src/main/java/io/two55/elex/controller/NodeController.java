@@ -31,6 +31,7 @@ import java.util.*;
 @RestController
 public class NodeController {
     private static final Logger log = LoggerFactory.getLogger(NodeController.class);
+    public static int MIN_SUGGESTION_LENGTH = 3;
 
     private final SuggestionDAO suggestionDAO;
     private final NodeDetailsDAO nodeDetailsDAO;
@@ -97,6 +98,9 @@ public class NodeController {
                                                   required = false,
                                                   defaultValue = "") String nodeTypeStr) {
         try {
+            if (suggestionString == null || suggestionString.length() < MIN_SUGGESTION_LENGTH) {
+                return Collections.emptyList();
+            }
             Set<String> nodeTypes = parseTypes(nodeTypeStr);
             return suggestionDAO.suggest(suggestionString, limit, nodeTypes);
         } catch (Exception e) {

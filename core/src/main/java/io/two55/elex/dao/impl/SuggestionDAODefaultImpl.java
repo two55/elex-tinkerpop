@@ -22,6 +22,7 @@ import io.two55.elex.dao.SuggestionDAO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,32 +33,36 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 @ConditionalOnProperty(name = "graph.type", havingValue = "default", matchIfMissing=true)
-public class SuggestionDAODefaultImpl implements SuggestionDAO {
-    public static int MIN_SUGGESTION_LENGTH = 3;
+public class SuggestionDAODefaultImpl<GraphType extends GraphSource<?>> implements SuggestionDAO {
     public static int MAX_SUGGESTIONS = 50;
 
-    protected GraphSource<?> graphSource;
+    protected GraphType graphSource;
     
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public SuggestionDAODefaultImpl(GraphSource<?> graphSource) {
+    public SuggestionDAODefaultImpl(GraphType graphSource) {
         this.graphSource = graphSource;
     }
 
     protected Stream<String> tokenize(String suggestionString) {
+        return tokenize(suggestionString, true);
+
+    }
+    protected Stream<String> tokenize(String suggestionString, boolean toLower) {
         // tokenize like solr StandardTokenizer: split on whitespace and punctuations, where 'periods (dots) that are
         // not followed by whitespace are kept as part of the token, including Internet domain names.
         return Arrays
                 .stream(suggestionString.split("[\\s!\"#$%&'()*+,\\-/:;<=>?@\\[\\\\\\]_`{|}~]+"))
                 .map(tok -> StringUtils.stripEnd(tok, "."))
                 .filter(tok -> !tok.isEmpty())
-                .map(String::toLowerCase);
+                .map(toLower?String::toLowerCase:Function.identity());
     }
 
     protected Set<String> tokenizeSet(String suggestionString) {
@@ -67,36 +72,32 @@ public class SuggestionDAODefaultImpl implements SuggestionDAO {
 
     @Override
     public List<Suggestion> suggest(String suggestionString, int limit, Set<String> nodeTypes) throws Exception {
-        if (suggestionString != null && suggestionString.length() >= MIN_SUGGESTION_LENGTH) {
-            final Set<String> queryToken = tokenizeSet(suggestionString);
+        final Set<String> queryToken = tokenizeSet(suggestionString);
 
-            Predicate<Traverser<Vertex>> containsAllQueryTokens = vt -> {
-                VertexProperty vp = vt.get().property("name");
-                if(vp.isPresent()) {
-                    return tokenizeSet(vp.value().toString()).containsAll(queryToken);
-                }
-                return false;
-            };
-            try (GraphSource.AutoTransaction<?> g = graphSource.autoRollback()) {
-                // this is a very slow & basic implementation based on gremlin (indices should be used instead)
-                // we are just iterating over all vertices and return the ones that contain all token
-                GraphTraversal<Vertex, Vertex> query = g.traversal().V();
-                if (nodeTypes!=null && nodeTypes.size() > 0) {
-                    String[] nodeTypeArray = nodeTypes.toArray(new String[nodeTypes.size()]);
-                    // filter nodeTypes
-                    query = query.hasLabel(
-                            nodeTypeArray[0],
-                            Arrays.copyOfRange(nodeTypeArray, 1, nodeTypeArray.length));
-                }
-                return query
-                        .filter(containsAllQueryTokens)
-                        .range(0, limit <= 0 ? MAX_SUGGESTIONS : Math.min(MAX_SUGGESTIONS, limit))
-                        .toStream()
-                        .map(Suggestion::fromVertex)
-                        .collect(Collectors.toList());
+        Predicate<Traverser<Vertex>> containsAllQueryTokens = vt -> {
+            VertexProperty vp = vt.get().property("name");
+            if(vp.isPresent()) {
+                return tokenizeSet(vp.value().toString()).containsAll(queryToken);
             }
+            return false;
+        };
+        try (GraphSource.AutoTransaction<?> g = graphSource.autoRollback()) {
+            // this is a very slow & basic implementation based on gremlin (indices should be used instead)
+            // we are just iterating over all vertices and return the ones that contain all token
+            GraphTraversal<Vertex, Vertex> query = g.traversal().V();
+            if (nodeTypes!=null && nodeTypes.size() > 0) {
+                String[] nodeTypeArray = nodeTypes.toArray(new String[nodeTypes.size()]);
+                // filter nodeTypes
+                query = query.hasLabel(
+                        nodeTypeArray[0],
+                        Arrays.copyOfRange(nodeTypeArray, 1, nodeTypeArray.length));
+            }
+            return query
+                    .filter(containsAllQueryTokens)
+                    .range(0, limit <= 0 ? MAX_SUGGESTIONS : Math.min(MAX_SUGGESTIONS, limit))
+                    .toStream()
+                    .map(Suggestion::fromVertex)
+                    .collect(Collectors.toList());
         }
-
-        return Collections.emptyList();
     }
 }
