@@ -28,5 +28,5 @@ target/
 # Project specific
 data/
 
-# IDE
+# IDE files
 .idea/
