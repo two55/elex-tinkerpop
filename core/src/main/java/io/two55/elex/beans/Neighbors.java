@@ -36,6 +36,10 @@ public class Neighbors {
         return nodeMap.keySet();
     }
 
+    public Optional<String> nodeType(String nodeId) {
+        return Optional.ofNullable(nodeMap.get(nodeId)).map(n -> n.type);
+    }
+
     private Map<String, Node> nodeMap = new HashMap<>();
 
     public void addEdge(Edge e) {

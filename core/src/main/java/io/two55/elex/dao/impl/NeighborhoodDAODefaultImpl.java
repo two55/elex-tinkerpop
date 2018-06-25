@@ -102,21 +102,14 @@ public class NeighborhoodDAODefaultImpl implements NeighborhoodDAO {
                         .forEach(neighbors::add);
             }
 
-            // normalize links & count
-            long numLinks = neighbors.links.stream()
-                    .map(l -> this.updateLinkProperties(l, t))
-                    .count();
-            // normalize nodes & count
-            long numNodes = neighbors.getNodes().stream()
-                    .map(n -> this.updateNodeProperties(n, t))
-                    .count();
+            neighbors = updateProperties(neighbors, t);
 
             if(log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Neighbor request for %s yields %d nodes and %d links.",
                         nodeId,
-                        numNodes,
-                        numLinks));
+                        neighbors.getNodes().size(),
+                        neighbors.links.size()));
             }
         }
         return neighbors;
@@ -152,6 +145,18 @@ public class NeighborhoodDAODefaultImpl implements NeighborhoodDAO {
                 }
             }
         }
+    }
+
+    protected Neighbors updateProperties(Neighbors neighbors, GraphTraversalSource t) {
+        // normalize links & count
+        long numLinks = neighbors.links.stream()
+                .map(l -> this.updateLinkProperties(l, t))
+                .count();
+        // normalize nodes & count
+        long numNodes = neighbors.getNodes().stream()
+                .map(n -> this.updateNodeProperties(n, t))
+                .count();
+        return neighbors;
     }
 
     protected Node updateNodeProperties(Node node, GraphTraversalSource t) {
