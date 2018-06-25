@@ -59,10 +59,13 @@ public class MetaDAODefaultImpl implements MetaDAO {
     // TODO remove when frontend supports default type settings for nodes/links correctly
     private SchemaMetaInformation cache = null;
 
-    SchemaMetaInformation cache() {
+    public SchemaMetaInformation cache() {
         if(cache==null) {
             cache = meta();
         }
         return cache;
+    }
+    public void clearCache() {
+        cache = null;
     }
 }

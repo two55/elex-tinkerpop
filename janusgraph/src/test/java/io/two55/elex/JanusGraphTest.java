@@ -16,6 +16,7 @@
 
 package io.two55.elex;
 
+import io.two55.elex.dao.impl.MetaDAODefaultImpl;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.Cardinality;
 import org.janusgraph.core.JanusGraph;
@@ -27,6 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 
@@ -35,6 +37,9 @@ public class JanusGraphTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @Autowired
+    private MetaDAODefaultImpl cachedMetaController;
 
     @Before
     public void initGraph() throws Exception {
@@ -48,6 +53,7 @@ public class JanusGraphTest {
     @After
     public void dropTestGraph() throws Exception {
         synchronized (this) {
+            cachedMetaController.clearCache();
             if (testGraph != null) {
                 JanusGraphFactory.drop(testGraph);
                 // cleanup previous index files in lucene directory shouldn't be necessary after dropping the graph:
