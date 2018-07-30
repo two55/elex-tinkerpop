@@ -19,6 +19,7 @@ package io.two55.elex.dao.janusgraph;
 import io.two55.elex.beans.SchemaMetaInformation;
 import io.two55.elex.config.GraphSource;
 import io.two55.elex.dao.impl.MetaDAODefaultImpl;
+import io.two55.utils.StreamUtils;
 import org.janusgraph.core.EdgeLabel;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.VertexLabel;
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,14 +56,14 @@ public class MetaDAOJanusGraph extends MetaDAODefaultImpl {
         Map<String, SchemaMetaInformation.Node> nodeInfoConfigs = displayConfig.getNodes()
                 .stream()
                 .collect(Collectors.toMap(SchemaMetaInformation.Node::getType, Function.identity()));
-        for (VertexLabel l : man.getVertexLabels()) {
-            if (nodeInfoConfigs.containsKey(l.name())) {
-                config.nodes.put(l.name(), nodeInfoConfigs.get(l.name()));
+        for (String vertexLabel : getValidVertexLabels(man)) {
+            if (nodeInfoConfigs.containsKey(vertexLabel)) {
+                config.nodes.put(vertexLabel, nodeInfoConfigs.get(vertexLabel));
             } else {
                 SchemaMetaInformation.Node newNode = new SchemaMetaInformation.Node();
-                newNode.setType(l.name());
+                newNode.setType(vertexLabel);
                 newNode.setExplore(false);
-                config.nodes.put(l.name(), newNode);
+                config.nodes.put(vertexLabel, newNode);
             }
         }
 
@@ -71,17 +73,31 @@ public class MetaDAOJanusGraph extends MetaDAODefaultImpl {
         Map<String, SchemaMetaInformation.Link> linkInfoConfigs = displayConfig.getLinks()
                 .stream()
                 .collect(Collectors.toMap(SchemaMetaInformation.Link::getType, Function.identity()));
-        for (EdgeLabel l : man.getRelationTypes(EdgeLabel.class)) {
-            if (linkInfoConfigs.containsKey(l.name())) {
-                config.links.put(l.name(), linkInfoConfigs.get(l.name()));
+        for (String edgeLabel : getValidEdgeLabels(man)) {
+            if (linkInfoConfigs.containsKey(edgeLabel)) {
+                config.links.put(edgeLabel, linkInfoConfigs.get(edgeLabel));
             } else {
                 SchemaMetaInformation.Link newNode = new SchemaMetaInformation.Link();
-                newNode.setType(l.name());
+                newNode.setType(edgeLabel);
                 newNode.setExplore(false);
-                config.links.put(l.name(), newNode);
+                config.links.put(edgeLabel, newNode);
             }
         }
         man.rollback();
         return config;
+    }
+
+    protected Set<String> getValidVertexLabels(JanusGraphManagement man) {
+        return StreamUtils
+                .toStream(man.getVertexLabels())
+                .map(VertexLabel::name)
+                .collect(Collectors.toSet());
+    }
+
+    protected Set<String> getValidEdgeLabels(JanusGraphManagement man) {
+        return StreamUtils
+                .toStream(man.getRelationTypes(EdgeLabel.class))
+                .map(EdgeLabel::name)
+                .collect(Collectors.toSet());
     }
 }
