@@ -18,7 +18,6 @@ package io.two55.elex.controller;
 
 
 import io.two55.elex.dao.LinkDetailsDAO;
-import io.two55.elex.dao.impl.LinkDetailsDAODefaultImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,7 @@ public class LinkController {
         this.linkDetailsDAO = linkDetailsDAO;
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/api/link/_id/{_id}/_details", method = RequestMethod.GET)
     public String getDetails(@PathVariable("_id") String linkId) {
         try {
