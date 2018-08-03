@@ -18,8 +18,8 @@ package io.two55.elex.controller;
 
 import io.two55.elex.beans.Neighbors;
 import io.two55.elex.beans.Suggestion;
-import io.two55.elex.dao.NodeDetailsDAO;
 import io.two55.elex.dao.NeighborhoodDAO;
+import io.two55.elex.dao.NodeDetailsDAO;
 import io.two55.elex.dao.SuggestionDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +53,7 @@ public class NodeController {
         return new HashSet<>(Arrays.asList(typeDefinitions.split("\\|")));
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/api/node/_id/{_id}/_neighbors", method = RequestMethod.GET)
     public Neighbors getNeighborhood(@PathVariable("_id") String nodeId,
                                      @RequestParam(
@@ -86,6 +87,7 @@ public class NodeController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/api/node/_suggest/{suggestion_string}", method = RequestMethod.GET)
     public List<Suggestion> getSuggestion(@PathVariable("suggestion_string") String suggestionString,
                                           @RequestParam(
@@ -109,6 +111,7 @@ public class NodeController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/api/node/_id/{_id}/_details", method = RequestMethod.GET)
     public String getDetails(@PathVariable("_id") String nodeId) {
         try {
