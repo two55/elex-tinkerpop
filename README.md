@@ -57,6 +57,20 @@ In order to build the frontend, we use [Docker](https://www.docker.com/):
    bash ./build_frontend.sh
    ```
 
+## Accessing the database using the Gremlin console
+You can access the JanusGraph instance using the Gremlin console which includes a Groovy interpreter. The `gremlin-console.sh` 
+creates a package of the `elex` sources and executes a Gremlin console instance binding the sources to this instance. Hence, 
+all `elex` classes can be found in the classpath the Gremlin console is operating in:
+```bash
+./gremlin-console.sh
+```
+
+Additionally, you can run Groovy scripts in the context of the Gremlin console. Check the console's usage for more 
+information in this matter:
+```bash
+./gremlin-console.sh --help
+```
+
 ## License
 The Entity Landscape Explorer is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
 
