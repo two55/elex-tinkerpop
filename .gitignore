@@ -1,8 +1,9 @@
 # Compiled class file
 *.class
 
-# Log file
+# Log files
 *.log
+log/
 
 # BlueJ files
 *.ctxt
@@ -31,3 +32,6 @@ data/
 # IDE files
 .idea/
 *.iml
+
+# files containing process identifiers
+*.pid
