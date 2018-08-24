@@ -7,8 +7,9 @@ mvn install -DskipTests
 
 if [ -n "$1" ]; then
   port="$1"
-  opts="-Drun.arguments=\"--server.port=${port}\""
+  opts="-Dspring-boot.run.arguments=--server.port=${port}"
 else
+  # default spring-boot port is 8080
   port="8080"
   opts=""
 fi
